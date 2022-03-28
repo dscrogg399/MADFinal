@@ -20,7 +20,7 @@
                 android:layout_height="wrap_content"
                 android:text="pantree"
                 android:textStyle="italic"
-                android:textSize="48sp"
+                android:textSize="40sp"
                 android:textColor="@color/white"
                 android:layout_gravity="center"/>
         </FrameLayout>
