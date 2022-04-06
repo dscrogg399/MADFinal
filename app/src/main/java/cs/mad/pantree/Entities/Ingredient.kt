@@ -13,7 +13,7 @@ data class Ingredient(
         ) {
     @PrimaryKey (
         autoGenerate = true
-            ) var id: Long = 0
+            ) var id: Long? = null
 }
 
 @Dao
