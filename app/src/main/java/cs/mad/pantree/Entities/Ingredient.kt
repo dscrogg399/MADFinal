@@ -7,13 +7,13 @@ data class IngredientContainer(
 )
 
 @Entity
-data class Ingredient (
-        var name: String,
-        var amount: Double
+data class Ingredient(
+    var name: String?,
+    var obtained: Boolean
         ) {
     @PrimaryKey (
         autoGenerate = true
-            ) var id: Int = 0
+            ) var id: Long = 0
 }
 
 @Dao
@@ -22,7 +22,7 @@ interface IngredientDao {
     suspend fun getAll(): List<Ingredient>
 
     @Insert
-    suspend fun insert(ig: Ingredient)
+    suspend fun insert(ig: Ingredient) : Long //returns type
 
     @Insert
     suspend fun insertAll(igs: List<Ingredient>)
