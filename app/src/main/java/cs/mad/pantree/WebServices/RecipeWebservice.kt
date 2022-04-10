@@ -1,6 +1,6 @@
 package cs.mad.pantree.WebServices
 
-import cs.mad.pantree.Entities.RecipeContainer
+import cs.mad.pantree.Entities.APIRecipe
 import cs.mad.pantree.Entities.SourceUrl
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -14,7 +14,8 @@ class RecipeWebservice {
         .baseUrl("https://api.spoonacular.com")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-    val recipeService = retrofit.create(RecipeSearchService::class.java)
+    val recipeSearchService = retrofit.create(RecipeSearchService::class.java)
+    val recipeUrlService = retrofit.create(RecipeUrlService::class.java)
 
 
 
@@ -27,12 +28,12 @@ class RecipeWebservice {
             @Query("number") maxResults: Int,
             @Query("ranking") maxUsed: Int
 
-        ): Call<RecipeContainer>
+        ): Call<List<APIRecipe>>
 
     }
 
-    interface RecipeInfoService {
-        @GET("/{id}/information")
+    interface RecipeUrlService {
+        @GET("/recipes/{id}/information")
         fun pullRecipe(
             @Path("id") id: Int,
             @Query("apiKey") apiKey: String

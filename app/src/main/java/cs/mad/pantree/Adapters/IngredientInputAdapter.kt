@@ -10,16 +10,17 @@ import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import cs.mad.pantree.Entities.Ingredient
-import cs.mad.pantree.Entities.IngredientDao
+
+import cs.mad.pantree.Entities.InputDao
+import cs.mad.pantree.Entities.UserInput
 import cs.mad.pantree.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class IngredientInputAdapter(private val ingDao: IngredientDao) : RecyclerView.Adapter<IngredientInputAdapter.ViewHolder>() {
+class IngredientInputAdapter(private val inpDao: InputDao) : RecyclerView.Adapter<IngredientInputAdapter.ViewHolder>() {
 
-    private val dataSet = mutableListOf<Ingredient>()
+    private val dataSet = mutableListOf<UserInput>()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val ingredientInput: TextInputLayout = view.findViewById(R.id.text_field_layout)
@@ -51,7 +52,7 @@ class IngredientInputAdapter(private val ingDao: IngredientDao) : RecyclerView.A
             override fun afterTextChanged(p0: Editable?) {
 
                 runOnIO {
-                    ingDao.update(item)
+                    inpDao.update(item)
                 }
 
             }
@@ -61,7 +62,7 @@ class IngredientInputAdapter(private val ingDao: IngredientDao) : RecyclerView.A
 
         viewHolder.deleteButton.setOnClickListener {
                 runOnIO {
-                    ingDao.delete(item)
+                    inpDao.delete(item)
                 }
                     dataSet.removeAt(position)
                     notifyItemRemoved(position)
@@ -74,15 +75,15 @@ class IngredientInputAdapter(private val ingDao: IngredientDao) : RecyclerView.A
     }
 
     fun addItem() {
-        var newIng = Ingredient(null,true )
+        var newInp = UserInput(null)
         runOnIO {
-            newIng.id = ingDao.insert(newIng)
+            newInp.id = inpDao.insert(newInp)
         }
-        dataSet.add(newIng)
+        dataSet.add(newInp)
         notifyItemInserted(dataSet.lastIndex)
     }
 
-    fun update(list: List<Ingredient>?) {
+    fun update(list: List<UserInput>?) {
         list?.let {
             dataSet.addAll(it)
             notifyDataSetChanged()
