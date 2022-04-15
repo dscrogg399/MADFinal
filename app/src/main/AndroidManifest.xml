@@ -11,7 +11,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Pantree">
+        android:theme="@style/Theme.Pantree"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".Activities.IngredientInputActivity"
             android:exported="true"
@@ -21,6 +22,21 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".Activities.CheckListActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+        </activity>
+        <activity
+            android:name=".Activities.RecipeListActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+        </activity>
+        <activity
+            android:name=".Activities.WebViewActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
         </activity>
     </application>
 

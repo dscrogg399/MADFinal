@@ -1,5 +1,7 @@
 package cs.mad.pantree.Activities
 
+
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -33,39 +35,86 @@ class IngredientInputActivity : AppCompatActivity(), Callback<List<APIRecipe>> {
         val view = binding.root
         setContentView(view)
 
+        //building database
         val db = Room.databaseBuilder(
             applicationContext,
             Database::class.java, Database.dataBaseName
         ).build()
         inpDao = db.inpDao()
+        //need these two for API call
         rcpDao = db.rcpDao()
         ingDao = db.ingDao()
 
+        //setting adapter
         binding.ingredientRecyclerView.adapter = IngredientInputAdapter(inpDao)
 
+        //add ingredient button, adds another text field to recycler using addItem()
         binding.addIngredientButton.setOnClickListener {
             (binding.ingredientRecyclerView.adapter as IngredientInputAdapter).addItem()
                 binding.ingredientRecyclerView.smoothScrollToPosition((binding.ingredientRecyclerView.adapter as IngredientInputAdapter).itemCount - 1)
         }
 
+        //search button, calls the api
+        binding.searchButton.setOnClickListener {
+
+            //pulling the text fields into one string for API search
+            var ings = (binding.ingredientRecyclerView.adapter as IngredientInputAdapter).getSearchString()
+            //makes the API call
+            apiCall(ings)
+
+        }
+
+        //call load data
         loadData()
 
-        apiTest()
+
 
     }
 
+    //calls the API webservice for searching by ingredient
+    private fun apiCall(ings: String) {
+        runOnIO {
+            rcpDao.deleteAll()
+        }
+        RecipeWebservice().recipeSearchService.searchRecipes("f645e9e38de842cfa8a46a4346419b2f", ings, 5, 1).enqueue(this)
+    }
 
+    //onResponse
+    override fun onResponse(
+        call: Call<List<APIRecipe>>,
+        response: Response<List<APIRecipe>>
+    ) {
+        //if successful,
+        if (response.isSuccessful) {
+            Log.d("onResponse", "download success!")
+            //grabs response body
+            val arcps = response.body()
+            //sends it to the database input function in the Recipe entity
+            var count = arcps?.size?: 0
+            arcps?.forEachIndexed {index, recipe -> recipe.storeInDatabase(rcpDao, ingDao, this) {
+                count--
+                if (count == 0) {
+                    //launches the RecipeList activity
+                    val i = Intent(this, RecipeListActivity::class.java)
+                    startActivity(i)
+                }
+            }
+            }
+        }
+    }
+
+    //on failure
+    override fun onFailure(call: Call<List<APIRecipe>>, t: Throwable) {
+        Log.e("onFailure", t.message!!)
+    }
+
+    //loads previous user input into text fields if app has been closed
     private fun loadData() {
         runOnIO {
             (binding.ingredientRecyclerView.adapter as IngredientInputAdapter).update((inpDao.getAll()))
         }
     }
 
-    private fun clearStorage() {
-        runOnIO {
-            inpDao.deleteAll()
-        }
-    }
 
     fun runOnIO(lambda: suspend () -> Unit) {
         runBlocking {
@@ -73,29 +122,7 @@ class IngredientInputActivity : AppCompatActivity(), Callback<List<APIRecipe>> {
         }
     }
 
-    private fun apiTest() {
-        RecipeWebservice().recipeSearchService.searchRecipes("5fb674b8b4e3412993d19c551979f844", "apples,+flour,+sugar", 5, 1).enqueue(this)
 
 
-    }
-
-    override fun onResponse(
-        call: Call<List<APIRecipe>>,
-        response: Response<List<APIRecipe>>
-    ) {
-        if (response.isSuccessful) {
-            Log.d("onResponse", "download success!")
-            val arcps = response.body()
-            arcps?.map { it.storeInDatabase(rcpDao, ingDao) }
-
-
-        }
-    }
-
-
-
-    override fun onFailure(call: Call<List<APIRecipe>>, t: Throwable) {
-        Log.e("onFailure", t.message!!)
-    }
 }
 

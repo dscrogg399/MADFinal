@@ -19,6 +19,7 @@ class RecipeWebservice {
 
 
 
+    //WebService for searching for recipes by ingredient
     interface RecipeSearchService {
 
         @GET("/recipes/findByIngredients")
@@ -32,6 +33,7 @@ class RecipeWebservice {
 
     }
 
+    //WebService for pulling the URL of a given recipe, outsideId of the recipe goes into the {id} path
     interface RecipeUrlService {
         @GET("/recipes/{id}/information")
         fun pullRecipe(

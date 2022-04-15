@@ -2,9 +2,10 @@ package cs.mad.pantree.Entities
 
 import androidx.room.*
 
-data class InputContainer(
-    val input: List<UserInput>
-)
+
+
+//very very simple database entity we use to keep the text fields on the Input screen updated when the app hasn't been cleared but has been
+//closed then opened again
 
 @Entity
 data class UserInput(
